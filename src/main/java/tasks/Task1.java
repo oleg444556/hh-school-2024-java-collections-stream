@@ -2,8 +2,11 @@ package tasks;
 
 import common.Person;
 import common.PersonService;
-import java.util.Collections;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /*
@@ -13,6 +16,7 @@ import java.util.Set;
 нужно их отсортировать в том же порядке, что и переданные id.
 Оценить асимптотику работы
  */
+// Асимптотика работы O(n)
 public class Task1 {
 
   private final PersonService personService;
@@ -23,6 +27,14 @@ public class Task1 {
 
   public List<Person> findOrderedPersons(List<Integer> personIds) {
     Set<Person> persons = personService.findPersons(personIds);
-    return Collections.emptyList();
+    Map<Integer, Person> idToPerson = new HashMap<>();
+    for (Person person : persons) {
+      idToPerson.put(person.id(), person);
+    }
+    List<Person> orderedPersons = new ArrayList<>();
+    for (int id : personIds) {
+      orderedPersons.add(idToPerson.get(id));
+    }
+    return orderedPersons;
   }
 }
