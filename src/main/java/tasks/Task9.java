@@ -5,7 +5,6 @@ import common.Person;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,25 +52,21 @@ public class Task9 {
 
   // словарь id персоны -> ее имя
   public Map<Integer, String> getPersonNames(Collection<Person> persons) {
-    // Убран initialCapacity у map, произойдет много лишних выделений памяти
-    // под новую расширенную хеш-таблицу; map переименована для лучшей читаемости
-    Map<Integer, String> personsIdToName = new HashMap<>();
-    for (Person person : persons) {
-      if (!personsIdToName.containsKey(person.id())) {
-        personsIdToName.put(person.id(), convertPersonToString(person));
-      }
-    }
-    return personsIdToName;
+    // Создание map завернуто в стрим
+    return persons.stream()
+        .collect(Collectors.toMap(Person::id, this::convertPersonToString));
   }
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    // Заменил медленно работающий алгоритм по перебору всех элементов каждого из списков на
-    // поиск пересечения 2-х множеств и проверки на пустоту
+    // Усовершенствовал алгоритм, чтобы использовалось меньше памяти
     Set<Person> set1 = new HashSet<>(persons1);
-    Set<Person> set2 = new HashSet<>(persons2);
-    set1.retainAll(set2);
-    return !set1.isEmpty();
+    for (Person person : persons2) {
+      if (set1.contains(person)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Посчитать число четных чисел

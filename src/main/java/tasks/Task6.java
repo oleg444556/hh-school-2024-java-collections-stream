@@ -4,9 +4,9 @@ import common.Area;
 import common.Person;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /*
@@ -22,14 +22,16 @@ public class Task6 {
   public static Set<String> getPersonDescriptions(Collection<Person> persons,
                                                   Map<Integer, Set<Integer>> personAreaIds,
                                                   Collection<Area> areas) {
-    Map<Integer, String> areasIdToName = new HashMap<>();
-    for (Area area : areas) {
-      areasIdToName.put(area.getId(), area.getName());
-    }
+    Map<Integer, Area> IdToArea = areas.stream()
+        .collect(Collectors.toMap(Area::getId, Function.identity()));
     return persons.stream()
         .flatMap(person -> personAreaIds.get(person.id())
             .stream()
-            .map(areaId -> person.firstName() + " - " + areasIdToName.get(areaId)))
+            .map(areaId -> makeStringNameToArea(person, IdToArea.get(areaId))))
         .collect(Collectors.toSet());
+  }
+
+  private static String makeStringNameToArea(Person person, Area area) {
+    return person.firstName() + " - " + area.getName();
   }
 }
